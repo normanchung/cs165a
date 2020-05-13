@@ -1,2 +1,2 @@
 #!/bin/bash
-python ./NaiveBayesClassifier.py $@
+python3 ./NaiveBayesClassifier.py $@
