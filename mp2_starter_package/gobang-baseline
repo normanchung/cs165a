@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#set current working directory to the directory of this script
+cd "${0%/*}" 
+
+#you can now reference your .py or .jar with relative path
+java -jar gobang-baseline.jar -d 2 $@
