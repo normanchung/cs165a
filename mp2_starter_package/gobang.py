@@ -141,24 +141,24 @@ def checkingwinner(board, players):
     return winner
 
 
-def checkingscore(arr, ai, opp):
+def checkingscore(arr, ai, opponent):
     score = 0
     newarr = ' '.join(map(str, arr)).replace(' ','')
     a = str(ai)
-    o = str(opp)
+    o = str(opponent)
     e = str(0)
 
     scores = {0: math.inf, 1: 1000, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 50, 8: 5, 9: 5, 10: 2, 11: 2, 12: 2, 13: 2}
 
     aipossiblemoves = [a+a+a+a+a+"", e+a+a+a+a+e+"", a+a+a+a+e+"", e+a+a+a+a+"", a+a+a+e+a+"", a+a+e+a+a+"",
                  a+e+a+a+a+"", e+a+a+a+e+"", a+a+a+e+"", e+a+a+a+"", e+a+e+a+e+"", e+a+a+e+"", e+a+a+"", a+a+e+""]
-    opppossiblemoves = [o+o+o+o+o+"", e+o+o+o+o+e+"", o+o+o+o+e+"", e+o+o+o+o+"", o+o+o+e+o+"", o+o+e+o+o+"",
+    opponentpossiblemoves = [o+o+o+o+o+"", e+o+o+o+o+e+"", o+o+o+o+e+"", e+o+o+o+o+"", o+o+o+e+o+"", o+o+e+o+o+"",
                  o+e+o+o+o+"", e+o+o+o+e+"", o+o+o+e+"", e+o+o+o+"", e+o+e+o+e+"", e+o+o+e+"", e+o+o+"", o+o+e+""]
     for i, move in enumerate(aipossiblemoves):
         if(move in newarr):
             score += scores[i]
             break
-    for i, move in enumerate(opppossiblemoves):
+    for i, move in enumerate(opponentpossiblemoves):
         if(move in newarr):
             score -= scores[i]
             break
@@ -173,17 +173,13 @@ def diagonal(m, x, y):
 
 
 def evalhuer(board, players, aiplayer, possmove):
-    r1 = 0
-    r2 = 0
-    r3 = 0
-    r4 = 0
     score = 0
     if(aiplayer == lightp):
         ai = 2
-        opp = 1
+        opponent = 1
     else:
         ai = 1
-        opp = 2
+        opponent = 2
 
     for i in range(size):
         for j in range(size):
@@ -195,24 +191,24 @@ def evalhuer(board, players, aiplayer, possmove):
                 rightdiag = list(diagonal(temp, j+1, i+1))
                 leftdiag = numpy.asarray(leftdiag)
                 rightdiag = numpy.asarray(rightdiag)
-                score += checkingscore(horizontal, ai, opp)
-                score += checkingscore(vertical, ai, opp)
-                score += checkingscore(leftdiag, ai, opp)
-                score += checkingscore(rightdiag, ai, opp)
+                score += checkingscore(horizontal, ai, opponent)
+                score += checkingscore(vertical, ai, opponent)
+                score += checkingscore(leftdiag, ai, opponent)
+                score += checkingscore(rightdiag, ai, opponent)
     return score
 
 
-neighbors = lambda x, y : [(x2, y2) for x2 in range(x-1, x+2)
-                               for y2 in range(y-1, y+2)
+neighbs = lambda x, y : [(x1, y1) for x1 in range(x-1, x+2)
+                               for y1 in range(y-1, y+2)
                                if (-1 < x <= size and
                                    -1 < y <= size and
-                                   (x != x2 or y != y2) and
-                                   (0 <= x2 <= size) and
-                                   (0 <= y2 <= size))]
+                                   (x != x1 or y != y1) and
+                                   (0 <= x1 <= size) and
+                                   (0 <= y1 <= size))]
 
 
 def minimax(board, players, depth, findingmax, alpha, beta):
-    move = []
+    possmovearr = []
     if(players['lightchosen']):
         currentmax = players['light']
         currentmin = allplayers['dark']
@@ -224,18 +220,18 @@ def minimax(board, players, depth, findingmax, alpha, beta):
         player = darkp
         minimizer = lightp
 
-    n = []
+    currneighbs = []
     emptyspace = []
     for i in range(size):
         for j in range(size):
             if((board[i][j] == currentmax) or (board[i][j] == currentmin)):
-                n += (neighbors(i, j))
+                currneighbs += (neighbs(i, j))
             if(board[i][j] == 0):
                 emptyspace.append((i,j))
-    n = set(n)
+    currneighbs = set(currneighbs)
     emptyspace = set(emptyspace)
-    if(len(emptyspace) > len(n)):
-        possmove = n
+    if(len(emptyspace) > len(currneighbs)):
+        possmove = currneighbs
     else:
         possmove = emptyspace
     if(depth == 2):
@@ -250,12 +246,12 @@ def minimax(board, players, depth, findingmax, alpha, beta):
                         score = minimax(board, minimizer, depth+1, False, alpha, beta)
                         board[i][j] = 0
                         if(score > best):
-                            move = [i,j]
+                            possmovearr = [i,j]
                         best = max(best, score)
                         alpha = max(alpha, best)
                         if alpha >= beta:
                             break
-        return best, move
+        return best, possmovearr
     else:
         best = math.inf
         for i in range(size):
