@@ -287,11 +287,6 @@ while(game):
             movepiece(board, lightp)
         goingsecond = False
     else:
-        #val = input("What's your move? ")
-        #val = val.lower()
-        #colp, rowp = re.findall(r'(\w+?)(\d+)', val)[0]
-        #colp = int(ord(colp)-96)
-        #rowp = int(rowp)
         opponentmove = sys.stdin.readline()
         opponentmove = opponentmove.lower()
         if opponentmove[-3].isdigit():
